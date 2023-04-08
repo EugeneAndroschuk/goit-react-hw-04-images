@@ -30,6 +30,7 @@ const ImageGallery = props => {
     setIsLoaderVisible(true);
     setIsButtonVisible(false);
     setIsFetchFulfilled(false);
+    setIsLastPage(false);
 
     const response = fetchImages({
       searchQuery: querySearch,
