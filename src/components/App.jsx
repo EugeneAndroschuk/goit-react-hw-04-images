@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
@@ -13,46 +13,30 @@ const App=()=> {
   const [isLoaderVisible, setIsLoaderVisible] = useState(false);
   const [isButtonVisible, setIsButtonVisible] = useState(false);
 
-  // state = {
-  //   search: '',
-  //   page: 1,
-  //   isOpenModal: false,
-  //   largeImageURL: null,
-  //   isLoaderVisible: false,
-  //   isButtonVisible: false,
-  // };
-
   const handleSearch = searchQ => {
     setSearch(searchQ);
     setPage(1);
-    // this.setState({ search, page: 1 });
   };
 
   const onClickLoadMore = pageValue => {
     setPage(pageValue);
-    // this.setState({ page: pageValue });
   };
 
   const setOnLargeImageURL = url => {
     setLargeImageURL(url);
     setIsOpenModal(true);
-    // this.setState({ largeImageURL: url });
-    // this.setState({ isOpenModal: true });
   };
 
   const onCloseModalEsc = () => {
     setIsOpenModal(false);
-    // this.setState({ isOpenModal: false });
   };
 
   const onShowLoader = bool => {
     setIsLoaderVisible(bool);
-    // this.setState({ isLoaderVisible: bool });
   };
 
   const onShowButton = (bool) => {
     setIsButtonVisible(bool);
-    // this.setState({ isButtonVisible: bool});
   }
 
     return (

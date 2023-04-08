@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
 import fetchImages from '../../functions/fetchImages.js';
@@ -18,19 +18,15 @@ const ImageGallery = props => {
     onShowButton,
   } = props;
   const [images, setImages] = useState([]);
-  const [maxPage, setMaxPage] = useState(1);
-  const isFirstRender = useRef(true);
+  const [maxPage, setMaxPage] = useState(null);
+  const [isLoaderVisible, setIsLoaderVisible] = useState(false);
+  const [isButtonVisible, setIsButtonVisible] = useState(false);
 
   useEffect(() => {
     if (!querySearch) return;
-    // if (isFirstRender.current) {
-    //   console.log('первый рендер')
-    //   isFirstRender.current = false;
-    //   return;
-    // }
 
-    onShowLoader(true);
-    onShowButton(false);
+    setIsLoaderVisible(true);
+    setIsButtonVisible(false);
 
     const response = fetchImages({
       searchQuery: querySearch,
@@ -38,20 +34,43 @@ const ImageGallery = props => {
     });
     response
       .then(obj => {
-        onShowLoader(false);
-        onShowButton(true);
         if (pageSearch === 1) {
           setImages([...obj.data.hits]);
           setMaxPage(Math.ceil(obj.data.totalHits / 12));
-        } else if (pageSearch === maxPage) {
-          onShowButton(false);
-          NotificationManager.info("You've reached the last page");
         } else setImages(prev => [...prev, ...obj.data.hits]);
-      })
-      .catch(err => console.log(err));
 
-    if (pageSearch !== 1) window.scrollBy(0, window.innerHeight);
+        setIsLoaderVisible(false);
+        console.log('выполнился запрос')
+        setIsButtonVisible(true);
+      })
+      .catch(err => {
+        console.log(err);
+        setIsLoaderVisible(false);
+      });
   }, [pageSearch, querySearch]);
+
+  useEffect(() => {
+    if (isLoaderVisible) onShowLoader(true);
+    else onShowLoader(false);
+  }, [isLoaderVisible, onShowLoader]);
+
+  useEffect(() => {
+    if (isButtonVisible) {
+      onShowButton(true);
+      window.scrollBy(0, window.innerHeight);
+    } else onShowButton(false);
+  }, [isButtonVisible, onShowButton]);
+
+  useEffect(() => {
+    console.log('pageSearch', pageSearch);
+    console.log('maxPage', maxPage);
+    if (pageSearch === maxPage) {
+      
+      setIsButtonVisible(false);
+      console.log('последняя страница');
+      NotificationManager.info("You've reached the last page");
+    }
+  }, [maxPage, pageSearch]);
 
   const setActiveIndexImage = index => {
     setLargeImageURL(images[index].largeImageURL);
