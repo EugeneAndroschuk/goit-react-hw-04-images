@@ -22,6 +22,7 @@ const ImageGallery = props => {
   const [isLoaderVisible, setIsLoaderVisible] = useState(false);
   const [isButtonVisible, setIsButtonVisible] = useState(false);
   const [isFetchFulfilled, setIsFetchFulfilled] = useState(false);
+  const [isLastPage, setIsLastPage] = useState(false);
 
   useEffect(() => {
     if (!querySearch) return;
@@ -63,12 +64,14 @@ const ImageGallery = props => {
     } else onShowButton(false);
   }, [isButtonVisible, onShowButton]);
 
+  useEffect(() => {if (pageSearch === maxPage) setIsLastPage(true)}, [maxPage, pageSearch]);
+
   useEffect(() => {
-    if (pageSearch === maxPage && isFetchFulfilled) {
+    if (isLastPage && isFetchFulfilled) {
       setIsButtonVisible(false);
       NotificationManager.info("You've reached the last page");
     }
-  }, [isFetchFulfilled, maxPage, pageSearch]);
+  }, [isFetchFulfilled, isLastPage]);
 
   const setActiveIndexImage = index => {
     setLargeImageURL(images[index].largeImageURL);
