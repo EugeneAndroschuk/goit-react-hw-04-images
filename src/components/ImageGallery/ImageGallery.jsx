@@ -21,12 +21,14 @@ const ImageGallery = props => {
   const [maxPage, setMaxPage] = useState(null);
   const [isLoaderVisible, setIsLoaderVisible] = useState(false);
   const [isButtonVisible, setIsButtonVisible] = useState(false);
+  const [isFetchFulfilled, setIsFetchFulfilled] = useState(false);
 
   useEffect(() => {
     if (!querySearch) return;
 
     setIsLoaderVisible(true);
     setIsButtonVisible(false);
+    setIsFetchFulfilled(false);
 
     const response = fetchImages({
       searchQuery: querySearch,
@@ -39,8 +41,8 @@ const ImageGallery = props => {
           setMaxPage(Math.ceil(obj.data.totalHits / 12));
         } else setImages(prev => [...prev, ...obj.data.hits]);
 
+        setIsFetchFulfilled(true);
         setIsLoaderVisible(false);
-        console.log('выполнился запрос')
         setIsButtonVisible(true);
       })
       .catch(err => {
@@ -62,15 +64,11 @@ const ImageGallery = props => {
   }, [isButtonVisible, onShowButton]);
 
   useEffect(() => {
-    console.log('pageSearch', pageSearch);
-    console.log('maxPage', maxPage);
-    if (pageSearch === maxPage) {
-      
+    if (pageSearch === maxPage && isFetchFulfilled) {
       setIsButtonVisible(false);
-      console.log('последняя страница');
       NotificationManager.info("You've reached the last page");
     }
-  }, [maxPage, pageSearch]);
+  }, [isFetchFulfilled, maxPage, pageSearch]);
 
   const setActiveIndexImage = index => {
     setLargeImageURL(images[index].largeImageURL);
